@@ -1,11 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using _2.Factory;
+using _2.Strategy;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
     private IAttackStrategy _currentWeapon;
-    public float speed = 5f;
+    [SerializeField] private float speed = 5f;
     
     void Update()
     {
@@ -14,25 +17,10 @@ public class PlayerMovement : MonoBehaviour
             AttackAction();
         }
         
-        if (Input.GetKey(KeyCode.W))
-        {
-            transform.Translate(Vector3.forward * (speed * Time.deltaTime));
-        }
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.Translate(Vector3.left * (speed * Time.deltaTime));
-        }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            transform.Translate(Vector3.back * (speed * Time.deltaTime));
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.Translate(Vector3.right * (speed * Time.deltaTime));
-        }
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
+        
+        transform.Translate(horizontal * Time.deltaTime * speed, 0, vertical * Time.deltaTime * speed);
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -53,5 +41,13 @@ public class PlayerMovement : MonoBehaviour
         _currentWeapon = newWeapon;
         Debug.Log("Weapon changed");
     }
-    
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Enemy enemy = collision.gameObject.GetComponent<Enemy>();
+        if (enemy != null)
+        {
+            enemy.Attack();
+        }
+    }
 }
