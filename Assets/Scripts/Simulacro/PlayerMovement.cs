@@ -1,29 +1,33 @@
 using UnityEngine;
 
+namespace Simulacro
+{
     public class PlayerMovement : MonoBehaviour
     {
         public float speed = 5f;
         public BulletData bulletData;
         public Transform firePoint;
+        public int health = 100;
 
-        private PlayerState currentState;
+        private PlayerState _currentState;
 
         void Start()
         {
-            currentState = new IdleState();
+            _currentState = new IdleState();
         }
 
         void Update()
         {
-            currentState.Handle(this);
+            _currentState.Handle(this);
         }
 
         public void SetState(PlayerState newState)
         {
-            currentState = newState;
+            _currentState = newState;
         }
         
     }
+}
         
     
 

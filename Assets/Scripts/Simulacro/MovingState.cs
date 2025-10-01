@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Simulacro;
+using UnityEngine;
 
 public class MovingState : PlayerState
 {

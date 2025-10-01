@@ -1,3 +1,4 @@
+using Simulacro;
 using UnityEngine;
 
 public abstract class PlayerState
