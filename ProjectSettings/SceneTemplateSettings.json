@@ -64,7 +64,8 @@
         {
             "userAdded": false,
             "type": "UnityEngine.PhysicsMaterial",
-            "defaultInstantiationMode": 0
+            "defaultInstantiationMode": 0,
+            "//": "Added to ensure physics materials are properly instantiated in scene templates."
         },
         {
             "userAdded": false,
