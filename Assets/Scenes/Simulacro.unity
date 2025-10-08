@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8076cdee85b0cb649a6b7beae4b94328, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 991267464}
+  player: {fileID: 991267464}
 --- !u!4 &477113227
 Transform:
   m_ObjectHideFlags: 0
@@ -1092,6 +1092,7 @@ MonoBehaviour:
   speed: 5
   bulletData: {fileID: 11400000, guid: a296aa756de604b438583fafec122af2, type: 2}
   firePoint: {fileID: 2091227980}
+  health: 100
 --- !u!136 &1796745159
 CapsuleCollider:
   m_ObjectHideFlags: 0
