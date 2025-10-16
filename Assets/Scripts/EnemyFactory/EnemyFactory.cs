@@ -43,11 +43,21 @@ public class EnemyFactory : MonoBehaviour
             return null;
         }
 
-        var enemy = queue.Dequeue();
-
-        if (enemy.activeInHierarchy)
+        GameObject enemy = null;
+        int poolCount = queue.Count;
+        for (int i = 0; i <= poolCount; i++)
         {
-            queue.Enqueue(enemy);
+            var obj = queue.Dequeue();
+            if (!obj.activeInHierarchy)
+            {
+                enemy = obj;
+                break;
+            }
+            queue.Enqueue(obj);
+        }
+
+        if (enemy == null)
+        {
             return null;
         }
 
