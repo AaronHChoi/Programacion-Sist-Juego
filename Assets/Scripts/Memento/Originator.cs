@@ -3,8 +3,8 @@
 namespace Memento
 {
     public class Originator: MonoBehaviour
-
     {
+        public int health = 100;
         public PlayerMemento SaveState()
         {
             return new PlayerMemento(transform.position, health);

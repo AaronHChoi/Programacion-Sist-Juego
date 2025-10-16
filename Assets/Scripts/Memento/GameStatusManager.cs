@@ -7,7 +7,7 @@ namespace Memento
     public class GameStatusManager: MonoBehaviour
     {
         private Stack<PlayerMemento> _savedStates = new Stack<PlayerMemento>();
-        public PlayerMovement _player;
+        public Originator _player;
 
         void Update()
         {
@@ -20,7 +20,7 @@ namespace Memento
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 PlayerMemento lastSavedState = _savedStates.Pop();
-                player.RestoreState(lastSavedState);
+                _player.RestoreState(lastSavedState);
                 Debug.Log("State Restored");
             }
         }
