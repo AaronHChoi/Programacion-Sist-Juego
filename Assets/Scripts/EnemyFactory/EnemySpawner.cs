@@ -21,7 +21,7 @@ public class EnemySpawner : MonoBehaviour
     void SpawnEnemy()
     {
         float x = Random.Range(-spawnArea.x, spawnArea.x);
-        Vector3 pos = new Vector3(x, 0, 10f); // 10f al frente de la cámara
+        Vector3 pos = new Vector3(x, 0, 10f); // 10f in front of the camera
         EnemyFactory.Instance.CreateEnemy(enemyType, pos);
     }
 }
