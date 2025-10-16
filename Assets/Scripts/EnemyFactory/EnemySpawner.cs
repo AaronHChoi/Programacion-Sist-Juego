@@ -4,7 +4,7 @@ public class EnemySpawner : MonoBehaviour
 {
     public float spawnInterval = 1.5f;
     public string enemyType = "BasicEnemy";
-    public Vector2 spawnArea = new Vector2(10f, 5f); // ancho y profundidad
+    public Vector2 spawnArea = new Vector2(10f, 5f); // width and depth
 
     private float timer;
 
