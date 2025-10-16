@@ -7,7 +7,7 @@ public class Enemy : MonoBehaviour, IEnemy
 
     public void Init()
     {
-        // Reinicia estado o animación
+        // Reset state or animation
     }
 
     void Update()
