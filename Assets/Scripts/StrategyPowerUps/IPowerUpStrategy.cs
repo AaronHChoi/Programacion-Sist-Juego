@@ -1,8 +1,5 @@
-using UnityEngine;
-
-public class IPowerUpStrategy : MonoBehaviour
+public interface IPowerUpStrategy
 {
     string Name { get; }
     void PowerUp();
-
 }
