@@ -1,9 +1,10 @@
+using Simulacro;
 using UnityEngine;
-
 public class Enemy : MonoBehaviour, IEnemy
 {
     [SerializeField] private float speed = 3f;
     [SerializeField] private float despawnZ = -10f;
+    [SerializeField] private int damage = 10; // Damage dealt to player
 
     public void Init()
     {
@@ -13,7 +14,6 @@ public class Enemy : MonoBehaviour, IEnemy
     void Update()
     {
         transform.Translate(Vector3.back * speed * Time.deltaTime, Space.World);
-
         if (transform.position.z < despawnZ)
             gameObject.SetActive(false);
     }
@@ -29,6 +29,18 @@ public class Enemy : MonoBehaviour, IEnemy
         {
             OnHit();
             other.gameObject.SetActive(false);
+        }
+        else if (other.CompareTag("Player"))
+        {
+            // Damage the player
+            PlayerMovement player = other.GetComponent<PlayerMovement>();
+            if (player != null)
+            {
+                player.TakeDamage(damage);
+            }
+
+            // Destroy/deactivate the enemy after hitting player
+            gameObject.SetActive(false);
         }
     }
 }

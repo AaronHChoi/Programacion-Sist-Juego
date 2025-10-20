@@ -1,5 +1,4 @@
 using UnityEngine;
-
 namespace Simulacro
 {
     public class PlayerMovement : MonoBehaviour
@@ -8,6 +7,8 @@ namespace Simulacro
         public BulletData bulletData;
         public Transform firePoint;
         public int health = 100;
+
+        [SerializeField] private int enemyDamage = 10; // Damage per collision
 
         private PlayerState _currentState;
 
@@ -25,6 +26,23 @@ namespace Simulacro
         {
             _currentState = newState;
         }
-        
+
+        public void TakeDamage(int damage)
+        {
+            health -= enemyDamage;
+            Debug.Log($"Player hit! Health: {health}");
+
+            if (health <= 0)
+            {
+                Die();
+            }
+        }
+
+        private void Die()
+        {
+            Debug.Log("Player died!");
+            // Add death logic here
+            gameObject.SetActive(false);
+        }
     }
 }
