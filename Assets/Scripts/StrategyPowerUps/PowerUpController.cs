@@ -17,7 +17,11 @@ public class PowerUpController : MonoBehaviour
         if (powerUp == null) return;
 
         SetStrategy(powerUp);
+        powerUp.PowerUp(); // Activar el power-up
 
         Debug.Log($"[Pickup] Equipped: {powerUp.Name}");
+
+        // Destruir o desactivar el objeto del power-up
+        other.gameObject.SetActive(false);
     }
 }

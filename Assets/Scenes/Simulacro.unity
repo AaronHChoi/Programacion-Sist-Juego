@@ -635,7 +635,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 789497740}
-  - component: {fileID: 789497741}
   m_Layer: 0
   m_Name: InvulnerabilityPowerUp
   m_TagString: Untagged
@@ -659,18 +658,6 @@ Transform:
   - {fileID: 1767037651}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &789497741
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 789497739}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfae3da44533fbd40929daaaba11b473, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &808497736
 GameObject:
   m_ObjectHideFlags: 0
@@ -1506,6 +1493,7 @@ GameObject:
   - component: {fileID: 1767037654}
   - component: {fileID: 1767037653}
   - component: {fileID: 1767037652}
+  - component: {fileID: 1767037655}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -1543,7 +1531,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -1602,6 +1590,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1767037650}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1767037655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1767037650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfae3da44533fbd40929daaaba11b473, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  duration: 8
 --- !u!1 &1782629456
 GameObject:
   m_ObjectHideFlags: 0
@@ -1611,7 +1612,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1782629457}
-  - component: {fileID: 1782629458}
   m_Layer: 0
   m_Name: InifiniteAmmoPowerUp
   m_TagString: Untagged
@@ -1635,18 +1635,6 @@ Transform:
   - {fileID: 2126009866}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1782629458
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1782629456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b834decd70a195b4e9d6095c656d1acb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1796745156
 GameObject:
   m_ObjectHideFlags: 0
@@ -1830,6 +1818,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbd9f7ca44dc4e241b392cc6c750bac4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 5
 --- !u!1 &1930505141
 GameObject:
   m_ObjectHideFlags: 0
@@ -2031,6 +2020,7 @@ GameObject:
   - component: {fileID: 2126009869}
   - component: {fileID: 2126009868}
   - component: {fileID: 2126009867}
+  - component: {fileID: 2126009870}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -2068,7 +2058,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -2127,6 +2117,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2126009865}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &2126009870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2126009865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b834decd70a195b4e9d6095c656d1acb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  duration: 10
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
