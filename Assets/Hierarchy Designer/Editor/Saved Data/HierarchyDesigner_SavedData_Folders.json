@@ -1,0 +1,148 @@
+{
+    "items": [
+        {
+            "Name": "CAMERA",
+            "TextColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "FontSize": 12,
+            "FontStyle": 0,
+            "ImageColor": {
+                "r": 0.3903007507324219,
+                "g": 0.0,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "ImageType": 6
+        },
+        {
+            "Name": "PLAYER",
+            "TextColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "FontSize": 12,
+            "FontStyle": 0,
+            "ImageColor": {
+                "r": 1.0,
+                "g": 0.0,
+                "b": 0.7676167488098145,
+                "a": 1.0
+            },
+            "ImageType": 0
+        },
+        {
+            "Name": "MANAGERS",
+            "TextColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "FontSize": 12,
+            "FontStyle": 0,
+            "ImageColor": {
+                "r": 1.0,
+                "g": 0.6084905862808228,
+                "b": 0.9292907118797302,
+                "a": 1.0
+            },
+            "ImageType": 0
+        },
+        {
+            "Name": "UI",
+            "TextColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "FontSize": 12,
+            "FontStyle": 0,
+            "ImageColor": {
+                "r": 0.5047169923782349,
+                "g": 1.0,
+                "b": 0.9199655055999756,
+                "a": 1.0
+            },
+            "ImageType": 0
+        },
+        {
+            "Name": "ENVIRONMENT",
+            "TextColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "FontSize": 12,
+            "FontStyle": 0,
+            "ImageColor": {
+                "r": 0.7493364214897156,
+                "g": 0.6179245710372925,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "ImageType": 0
+        },
+        {
+            "Name": "FACTORY",
+            "TextColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "FontSize": 12,
+            "FontStyle": 0,
+            "ImageColor": {
+                "r": 1.0,
+                "g": 0.5613207817077637,
+                "b": 0.5959697365760803,
+                "a": 1.0
+            },
+            "ImageType": 0
+        },
+        {
+            "Name": "STRATEGY",
+            "TextColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "FontSize": 12,
+            "FontStyle": 0,
+            "ImageColor": {
+                "r": 0.4575471878051758,
+                "g": 0.8901088833808899,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "ImageType": 0
+        },
+        {
+            "Name": "MEMENTO",
+            "TextColor": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 1.0,
+                "a": 1.0
+            },
+            "FontSize": 12,
+            "FontStyle": 0,
+            "ImageColor": {
+                "r": 1.0,
+                "g": 0.400943398475647,
+                "b": 0.5432197451591492,
+                "a": 1.0
+            },
+            "ImageType": 0
+        }
+    ]
+}
