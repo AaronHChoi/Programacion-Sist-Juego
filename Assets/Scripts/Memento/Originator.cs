@@ -1,19 +1,27 @@
 ﻿using UnityEngine;
+using Simulacro;
 
 namespace Memento
 {
-    public class Originator: MonoBehaviour
+    public class Originator : MonoBehaviour
     {
-        public int health = 100;
+        private PlayerMovement _playerMovement;
+
+        void Awake()
+        {
+            _playerMovement = GetComponent<PlayerMovement>();
+        }
+
         public PlayerMemento SaveState()
         {
-            return new PlayerMemento(transform.position, health);
+            return new PlayerMemento(transform.position, _playerMovement.health);
         }
 
         public void RestoreState(PlayerMemento memento)
         {
             transform.position = memento.Position;
-            this.health = memento.Health;
+            _playerMovement.health = memento.Health;
+            Debug.Log($"Health restored to: {_playerMovement.health}");
         }
     }
 }
