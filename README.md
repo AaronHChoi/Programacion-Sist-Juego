@@ -1,5 +1,5 @@
-**Patrones Usados
-**
+--Patrones Usados--
+
 Singleton: Game Manger
 
 Observer: AmmoUI
