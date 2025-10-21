@@ -41,6 +41,13 @@ public class Enemy : MonoBehaviour, IEnemy
     public void OnHit()
     {
         TrySpawnPowerUp();
+
+        // Notificar al GameManager que un enemigo murió
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnEnemyKilled();
+        }
+
         gameObject.SetActive(false);
     }
 
