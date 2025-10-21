@@ -4,36 +4,36 @@ using UnityEngine;
 public class Enemy : MonoBehaviour, IEnemy
 {
     [SerializeField] private float speed = 3f;
+    [SerializeField] private float horizontalAmplitude = 2f;
+    [SerializeField] private float horizontalFrequency = 2f;
     [SerializeField] private float despawnZ = -10f;
     [SerializeField] private int damage = 10;
     [SerializeField] private float powerUpDropChance = 0.3f;
     [SerializeField] private GameObject[] powerUpPrefabs;
 
+    private float timeOffset;
+
     public void Init()
     {
-        // Reset state or animation
+        timeOffset = Random.value * Mathf.PI * 2f;
     }
 
     void Update()
     {
-        // En lugar de mover directamente, encolar el evento de movimiento
         if (EventQueue.Instance != null)
         {
-            MoveEnemyEvent moveEvent = new MoveEnemyEvent(
-                transform,
-                Vector3.back,
-                speed,
-                Time.deltaTime
-            );
+            // Compute oscillation on X
+            float horizontal = Mathf.Sin(Time.time * horizontalFrequency + timeOffset) * horizontalAmplitude;
+            Vector3 moveDir = (Vector3.back + Vector3.right * horizontal).normalized;
+
+            MoveEnemyEvent moveEvent = new MoveEnemyEvent(transform, moveDir, speed, Time.deltaTime);
             EventQueue.Instance.EnqueueEvent(moveEvent);
         }
         else
         {
-            // Fallback si no hay EventQueue
             transform.Translate(Vector3.back * speed * Time.deltaTime, Space.World);
         }
 
-        // Check despawn
         if (transform.position.z < despawnZ)
             gameObject.SetActive(false);
     }
@@ -41,13 +41,7 @@ public class Enemy : MonoBehaviour, IEnemy
     public void OnHit()
     {
         TrySpawnPowerUp();
-
-        // Notificar al GameManager que un enemigo murió
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.OnEnemyKilled();
-        }
-
+        GameManager.Instance?.OnEnemyKilled();
         gameObject.SetActive(false);
     }
 
@@ -60,24 +54,19 @@ public class Enemy : MonoBehaviour, IEnemy
         }
         else if (other.CompareTag("Player"))
         {
-            PlayerMovement player = other.GetComponent<PlayerMovement>();
-            if (player != null)
-            {
+            if (other.TryGetComponent(out PlayerMovement player))
                 player.TakeDamage(damage);
-            }
             gameObject.SetActive(false);
         }
     }
 
     private void TrySpawnPowerUp()
     {
-        if (powerUpPrefabs == null || powerUpPrefabs.Length == 0)
-            return;
-
+        if (powerUpPrefabs == null || powerUpPrefabs.Length == 0) return;
         if (Random.value <= powerUpDropChance)
         {
-            GameObject powerUpPrefab = powerUpPrefabs[Random.Range(0, powerUpPrefabs.Length)];
-            GameObject powerUp = Instantiate(powerUpPrefab, transform.position, Quaternion.identity);
+            var prefab = powerUpPrefabs[Random.Range(0, powerUpPrefabs.Length)];
+            Instantiate(prefab, transform.position, Quaternion.identity);
         }
     }
 }

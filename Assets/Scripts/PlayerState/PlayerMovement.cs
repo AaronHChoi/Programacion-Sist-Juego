@@ -9,8 +9,6 @@ namespace Simulacro
         public BulletData bulletData;
         public Transform firePoint;
         public int health = 100;
-
-        [SerializeField] private int enemyDamage = 10;
         private bool isInvulnerable = false; // Flag de invulnerabilidad
         private Coroutine invulnerabilityCoroutine; // Referencia a la coroutine activa
 
@@ -33,14 +31,14 @@ namespace Simulacro
 
         public void TakeDamage(int damage)
         {
-            // Si es invulnerable, no recibe daño
+            // Si es invulnerable, no recibe daÃ±o
             if (isInvulnerable)
             {
                 Debug.Log("Player is invulnerable! No damage taken.");
                 return;
             }
 
-            health -= enemyDamage;
+            health -= damage;
             Debug.Log($"Player hit! Health: {health}");
 
             if (health <= 0)
@@ -79,7 +77,7 @@ namespace Simulacro
             }
         }
 
-        // Nuevo método para activar invulnerabilidad por duración
+        // Nuevo mï¿½todo para activar invulnerabilidad por duraciï¿½n
         public void ActivateInvulnerabilityForDuration(float duration)
         {
             // Si ya hay una coroutine activa, detenerla

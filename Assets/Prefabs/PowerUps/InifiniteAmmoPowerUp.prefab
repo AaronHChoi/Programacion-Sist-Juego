@@ -196,5 +196,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fallSpeed: 5
-  despawnZ: -10
+  despawnZ: -20
   rotationSpeed: 0
