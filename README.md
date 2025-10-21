@@ -1,6 +1,6 @@
 --Patrones Usados--
 
-Singleton: Game Manger
+Singleton: Game Manager
 
 Observer: AmmoUI
 
