@@ -16,7 +16,6 @@ public class PowerUpController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // If this is a dropped power-up and player touches it
         if (other.CompareTag("Player"))
         {
             PowerUpController playerController = other.GetComponent<PowerUpController>();
@@ -34,7 +33,6 @@ public class PowerUpController : MonoBehaviour
             return;
         }
 
-        // Original logic for picking up power-ups that are already on the ground
         IPowerUpStrategy powerUpStrategy = other.GetComponent<IPowerUpStrategy>();
         if (powerUpStrategy == null) return;
 

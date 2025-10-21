@@ -8,11 +8,10 @@ namespace Simulacro
         [SerializeField] private TextMeshProUGUI healthText;
         [SerializeField] private PlayerMovement player;
 
-        private int lastHealth = -1; // Para evitar actualizaciones innecesarias
+        private int lastHealth = -1; 
 
         void Update()
         {
-            // Solo actualiza si la salud cambió
             if (player != null && player.health != lastHealth)
             {
                 UpdateHealthDisplay();
