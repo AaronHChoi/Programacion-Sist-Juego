@@ -29,7 +29,7 @@ public class PowerUpController : MonoBehaviour
                     Debug.Log($"[Pickup] Equipped: {powerUp.Name}");
                 }
             }
-            Destroy(gameObject);
+            gameObject.SetActive(false);
             return;
         }
 
