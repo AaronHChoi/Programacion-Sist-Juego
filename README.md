@@ -6,7 +6,7 @@ Observer: AmmoUI
 
 Factory: EnemyFactory, BulletFactory
 
-Pool: Bullets
+Pool: Bullets, Enemies
 
 EventQueue: Enemies
 
