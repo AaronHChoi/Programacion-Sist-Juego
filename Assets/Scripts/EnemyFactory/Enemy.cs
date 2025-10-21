@@ -6,8 +6,8 @@ public class Enemy : MonoBehaviour, IEnemy
     [SerializeField] private float speed = 3f;
     [SerializeField] private float despawnZ = -10f;
     [SerializeField] private int damage = 10;
-    [SerializeField] private float powerUpDropChance = 0.3f; // 30% chance to drop power-up
-    [SerializeField] private GameObject[] powerUpPrefabs; // Assign your power-up sphere prefabs
+    [SerializeField] private float powerUpDropChance = 0.3f;
+    [SerializeField] private GameObject[] powerUpPrefabs;
 
     public void Init()
     {
@@ -16,14 +16,30 @@ public class Enemy : MonoBehaviour, IEnemy
 
     void Update()
     {
-        transform.Translate(Vector3.back * speed * Time.deltaTime, Space.World);
+        // En lugar de mover directamente, encolar el evento de movimiento
+        if (EventQueue.Instance != null)
+        {
+            MoveEnemyEvent moveEvent = new MoveEnemyEvent(
+                transform,
+                Vector3.back,
+                speed,
+                Time.deltaTime
+            );
+            EventQueue.Instance.EnqueueEvent(moveEvent);
+        }
+        else
+        {
+            // Fallback si no hay EventQueue
+            transform.Translate(Vector3.back * speed * Time.deltaTime, Space.World);
+        }
+
+        // Check despawn
         if (transform.position.z < despawnZ)
             gameObject.SetActive(false);
     }
 
     public void OnHit()
     {
-        // Spawn power-up before deactivating
         TrySpawnPowerUp();
         gameObject.SetActive(false);
     }
