@@ -3,25 +3,42 @@ using UnityEngine;
 public class PowerUpController : MonoBehaviour
 {
     private IPowerUpStrategy _current = new NonePowerUp();
-    [SerializeField] private float speed = 5f;
-
+   
     public void SetStrategy(IPowerUpStrategy strategy)
     {
         _current = strategy ?? new NonePowerUp();
         Debug.Log($"Equipped Powerup: {_current.Name}");
     }
 
+ 
+
+  
+
     private void OnTriggerEnter(Collider other)
     {
-        IPowerUpStrategy powerUp = other.GetComponent<IPowerUpStrategy>();
-        if (powerUp == null) return;
+        if (other.CompareTag("Player"))
+        {
+            PowerUpController playerController = other.GetComponent<PowerUpController>();
+            if (playerController != null)
+            {
+                IPowerUpStrategy powerUp = GetComponent<IPowerUpStrategy>();
+                if (powerUp != null)
+                {
+                    playerController.SetStrategy(powerUp);
+                    powerUp.PowerUp();
+                    Debug.Log($"[Pickup] Equipped: {powerUp.Name}");
+                }
+            }
+            gameObject.SetActive(false);
+            return;
+        }
 
-        SetStrategy(powerUp);
-        powerUp.PowerUp(); // Activar el power-up
+        IPowerUpStrategy powerUpStrategy = other.GetComponent<IPowerUpStrategy>();
+        if (powerUpStrategy == null) return;
 
-        Debug.Log($"[Pickup] Equipped: {powerUp.Name}");
-
-        // Destruir o desactivar el objeto del power-up
+        SetStrategy(powerUpStrategy);
+        powerUpStrategy.PowerUp();
+        Debug.Log($"[Pickup] Equipped: {powerUpStrategy.Name}");
         other.gameObject.SetActive(false);
     }
 }

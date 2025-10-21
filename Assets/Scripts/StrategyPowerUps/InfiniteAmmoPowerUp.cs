@@ -4,7 +4,7 @@ public class InfiniteAmmoPowerUp : MonoBehaviour, IPowerUpStrategy
 {
     public string Name => "InfiniteAmmoPowerUp";
 
-    [SerializeField] private float duration = 10f; // Duración del power-up
+    [SerializeField] private float duration = 10f; 
 
     public void PowerUp()
     {
@@ -12,7 +12,6 @@ public class InfiniteAmmoPowerUp : MonoBehaviour, IPowerUpStrategy
 
         if (AmmoManager.Instance != null)
         {
-            // Ejecutar la coroutine en el AmmoManager en lugar de en este objeto
             AmmoManager.Instance.ActivateInfiniteAmmoForDuration(duration);
         }
     }

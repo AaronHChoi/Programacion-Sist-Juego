@@ -9,8 +9,8 @@ public class AmmoManager : MonoBehaviour
 
     [SerializeField] private int maxAmmo = 10;
     private int currentAmmo;
-    private bool infiniteAmmo = false; // Flag para munición infinita
-    private Coroutine infiniteAmmoCoroutine; // Referencia a la coroutine activa
+    private bool infiniteAmmo = false; 
+    private Coroutine infiniteAmmoCoroutine; 
 
     void Awake()
     {
@@ -28,10 +28,9 @@ public class AmmoManager : MonoBehaviour
 
     public bool TryUseAmmo()
     {
-        // Si tiene munición infinita, siempre retorna true
         if (infiniteAmmo)
         {
-            OnAmmoChanged?.Invoke(-1); // -1 indica infinito en UI
+            OnAmmoChanged?.Invoke(-1); 
             return true;
         }
 
@@ -44,7 +43,7 @@ public class AmmoManager : MonoBehaviour
 
     public void Reload()
     {
-        if (infiniteAmmo) return; // No recargar si tiene munición infinita
+        if (infiniteAmmo) return; 
 
         currentAmmo = maxAmmo;
         OnAmmoChanged?.Invoke(currentAmmo);
@@ -56,19 +55,17 @@ public class AmmoManager : MonoBehaviour
 
         if (active)
         {
-            OnAmmoChanged?.Invoke(-1); // Notificar UI
+            OnAmmoChanged?.Invoke(-1); 
         }
         else
         {
-            currentAmmo = maxAmmo; // Restaurar munición al terminar
+            currentAmmo = maxAmmo; 
             OnAmmoChanged?.Invoke(currentAmmo);
         }
     }
 
-    // Nuevo método para activar munición infinita por duración
     public void ActivateInfiniteAmmoForDuration(float duration)
     {
-        // Si ya hay una coroutine activa, detenerla
         if (infiniteAmmoCoroutine != null)
         {
             StopCoroutine(infiniteAmmoCoroutine);
