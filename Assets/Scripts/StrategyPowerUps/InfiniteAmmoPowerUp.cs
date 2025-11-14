@@ -9,10 +9,18 @@ public class InfiniteAmmoPowerUp : MonoBehaviour, IPowerUpStrategy
     {
         if (player == null) return;
 
-        // Aplica color azul durante la duración del powerup
+        // Visual feedback for the duration of the power-up
         player.ApplyPowerUpColorForDuration(Color.blue, duration);
 
-        // Si quieres la lógica real de balas infinitas, implementa un método en PlayerMovement
-        // por ejemplo: player.EnableInfiniteAmmo(duration);
+        // Activate real infinite ammo behavior via AmmoManager
+        if (AmmoManager.Instance != null)
+        {
+            AmmoManager.Instance.ActivateInfiniteAmmoForDuration(duration);
+            Debug.Log($"Infinite ammo activated for {duration} seconds");
+        }
+        else
+        {
+            Debug.LogWarning("AmmoManager.Instance is null. Ensure an AmmoManager exists in the scene.");
+        }
     }
 }
