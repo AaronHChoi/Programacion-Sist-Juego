@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: b326058b778f44e03b22bd2d3a50d9b3
-PrefabImporter:
+guid: 9caefd2392c54574a9cd9391713401d7
+DefaultImporter:
   externalObjects: {}
   userData: 
   assetBundleName: 
@@ -10,5 +10,5 @@ AssetOrigin:
   productId: 267010
   packageName: Poly Angel - Space Pack
   packageVersion: 1.0
-  assetPath: Assets/PolyAngel_Space Pack/Prefabs/Truck03.prefab
+  assetPath: Assets/Scenes/Demo Scene.unity
   uploadId: 632350
