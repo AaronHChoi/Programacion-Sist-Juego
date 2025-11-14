@@ -13,7 +13,7 @@ namespace Memento
 
         [Header("Auto Save Settings")]
         [SerializeField] private bool autoSaveOnStart = true;
-        [SerializeField] private float autoSaveDelay = 0.5f;
+        [SerializeField] private readonly float autoSaveDelay = 0.5f;
 
         void Awake()
         {
