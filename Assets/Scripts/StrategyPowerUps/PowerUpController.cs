@@ -10,10 +10,6 @@ public class PowerUpController : MonoBehaviour
         Debug.Log($"Equipped Powerup: {_current.Name}");
     }
 
- 
-
-  
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
