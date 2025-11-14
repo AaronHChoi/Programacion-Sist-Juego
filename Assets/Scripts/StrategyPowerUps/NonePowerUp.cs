@@ -3,7 +3,7 @@ using UnityEngine;
 public class NonePowerUp : IPowerUpStrategy
 {
     public string Name => "NonePowerUp";
-    public void PowerUp(Simulacro.PlayerMovement player)
+    public void PowerUp()
     {
         Debug.Log("No Power Up!");
     }

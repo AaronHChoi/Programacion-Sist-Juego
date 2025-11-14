@@ -20,9 +20,8 @@ public class PowerUpController : MonoBehaviour
                 IPowerUpStrategy powerUp = GetComponent<IPowerUpStrategy>();
                 if (powerUp != null)
                 {
-                    var playerMovement = other.GetComponent<Simulacro.PlayerMovement>();
                     playerController.SetStrategy(powerUp);
-                    powerUp.PowerUp(playerMovement);
+                    powerUp.PowerUp();
                     Debug.Log($"[Pickup] Equipped: {powerUp.Name}");
                 }
             }
@@ -34,8 +33,7 @@ public class PowerUpController : MonoBehaviour
         if (powerUpStrategy == null) return;
 
         SetStrategy(powerUpStrategy);
-        var otherPlayerMovement = other.GetComponent<Simulacro.PlayerMovement>();
-        powerUpStrategy.PowerUp(otherPlayerMovement);
+        powerUpStrategy.PowerUp();
         Debug.Log($"[Pickup] Equipped: {powerUpStrategy.Name}");
         other.gameObject.SetActive(false);
     }
