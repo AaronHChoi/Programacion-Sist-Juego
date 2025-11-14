@@ -21,21 +21,23 @@ namespace Memento
             {
                 _player = FindFirstObjectByType<Originator>();
             }
-            if (_player != null)
-            {
-                _playerMovement = _player.GetComponent<PlayerMovement>();
-            }
+            EnsurePlayerMovementReference();
         }
 
         void OnEnable()
         {
-            if (_playerMovement == null && _player != null)
-            {
-                _playerMovement = _player.GetComponent<PlayerMovement>();
-            }
+            EnsurePlayerMovementReference();
             if (_playerMovement != null)
             {
                 _playerMovement.OnDied += HandlePlayerDeath;
+            }
+        }
+
+        private void EnsurePlayerMovementReference()
+        {
+            if (_playerMovement == null && _player != null)
+            {
+                _playerMovement = _player.GetComponent<PlayerMovement>();
             }
         }
 
