@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -15,6 +16,9 @@ namespace Simulacro
         private Coroutine colorCoroutine;
 
         private PlayerState _currentState;
+
+        // Notify observers when the player dies
+        public event Action OnDied;
 
         // Guardamos los colores originales de todos los renderers/materiales
         private struct RendererOriginalColors
@@ -76,6 +80,9 @@ namespace Simulacro
         private void Die()
         {
             Debug.Log("Player died!");
+            // Notify listeners first so they can handle respawn logic
+            OnDied?.Invoke();
+            // Deactivate after notifying; external systems can reactivate on next frame
             gameObject.SetActive(false);
         }
 
