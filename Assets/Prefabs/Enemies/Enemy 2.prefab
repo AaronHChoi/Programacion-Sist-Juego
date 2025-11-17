@@ -11,8 +11,10 @@ GameObject:
   - component: {fileID: 5008355893795001458}
   - component: {fileID: 8227683663386352599}
   - component: {fileID: 6181874362425896733}
+  - component: {fileID: 2937281166838360669}
+  - component: {fileID: 7733465595366830331}
   m_Layer: 0
-  m_Name: Truck06
+  m_Name: Enemy 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25,13 +27,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5677510306387119816}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8227683663386352599
 MeshFilter:
@@ -58,6 +60,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -84,3 +89,45 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2937281166838360669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5677510306387119816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c9a0307f9d89a444a0099f4ed880205, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 8
+  horizontalAmplitude: 2
+  horizontalFrequency: 2
+  despawnZ: -20
+  damage: 10
+  powerUpDropChance: 0.2
+  powerUpPrefabs:
+  - {fileID: 7622235804500772687, guid: 626a7a5cfcc1f9a4badaf202015dad85, type: 3}
+  - {fileID: 7622235804500772687, guid: e0263b54284e58646b5a70deb5bcea59, type: 3}
+--- !u!65 &7733465595366830331
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5677510306387119816}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.6528182, y: 2.2603545, z: 6.18521}
+  m_Center: {x: 0.0011149049, y: 0.24347135, z: 0.08172929}
