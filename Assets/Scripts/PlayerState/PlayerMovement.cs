@@ -7,20 +7,30 @@ namespace Simulacro
 {
     public class PlayerMovement : MonoBehaviour
     {
+        [Header("Movement")]
         public float speed = 5f;
+        public float rotationSpeed = 200f; // Nueva velocidad de rotación
+        
+        [Header("Shooting")]
         public BulletData bulletData;
         public Transform firePoint;
+        
+        [Header("Health")]
         public int health = 100;
+        
+        [Header("Visuals")]
+        [SerializeField] private Transform weaponTransform; // Referencia al arma
+        [SerializeField] private Transform carBodyTransform; // Referencia al modelo del auto
+        
         private bool isInvulnerable = false;
         private Coroutine invulnerabilityCoroutine;
         private Coroutine colorCoroutine;
 
         private PlayerState _currentState;
 
-        // Notify observers when the player dies
         public event Action OnDied;
+        public event Action<string> OnStateChanged; // Nuevo evento para UI
 
-        // Guardamos los colores originales de todos los renderers/materiales
         private struct RendererOriginalColors
         {
             public Renderer renderer;
@@ -31,33 +41,52 @@ namespace Simulacro
         void Start()
         {
             _currentState = new IdleState();
+            OnStateChanged?.Invoke("Idle"); // Notifica estado inicial
 
-            // Recolectar todos los renderers (incluye hijos) y guardar sus colores originales
-            var renderers = GetComponentsInChildren<Renderer>();
-            foreach (var rend in renderers)
+            // Guardar colores originales del auto (no del arma)
+            if (carBodyTransform != null)
             {
-                var mats = rend.materials; // esto puede instanciar materiales, pero nos permite modificar colores por instancia
-                var colors = new Color[mats.Length];
-                for (int i = 0; i < mats.Length; i++)
+                var renderers = carBodyTransform.GetComponentsInChildren<Renderer>();
+                foreach (var rend in renderers)
                 {
-                    // Verificamos que el material tenga la propiedad de color
-                    if (mats[i].HasProperty("_Color"))
-                        colors[i] = mats[i].color;
-                    else
-                        colors[i] = Color.white;
+                    var mats = rend.materials;
+                    var colors = new Color[mats.Length];
+                    for (int i = 0; i < mats.Length; i++)
+                    {
+                        if (mats[i].HasProperty("_Color"))
+                            colors[i] = mats[i].color;
+                        else
+                            colors[i] = Color.white;
+                    }
+                    _originals.Add(new RendererOriginalColors { renderer = rend, colors = colors });
                 }
-                _originals.Add(new RendererOriginalColors { renderer = rend, colors = colors });
+            }
+
+            // Asegurar que el arma apunte siempre hacia adelante
+            if (weaponTransform != null)
+            {
+                weaponTransform.localRotation = Quaternion.identity;
             }
         }
 
         void Update()
         {
             _currentState.Handle(this);
+            
+            // Mantener el arma apuntando hacia adelante (en caso de que se desvíe)
+            if (weaponTransform != null)
+            {
+                weaponTransform.rotation = Quaternion.Euler(0, 0, 0); // Siempre hacia adelante
+            }
         }
 
         public void SetState(PlayerState newState)
         {
             _currentState = newState;
+            
+            // Notificar cambio de estado para la UI
+            string stateName = newState.GetType().Name.Replace("State", "");
+            OnStateChanged?.Invoke(stateName);
         }
 
         public void TakeDamage(int damage)
@@ -80,27 +109,23 @@ namespace Simulacro
         private void Die()
         {
             Debug.Log("Player died!");
-            // Notify listeners first so they can handle respawn logic
             OnDied?.Invoke();
-            // Deactivate after notifying; external systems can reactivate on next frame
             gameObject.SetActive(false);
         }
 
-        // Cambiado: la invulnerabilidad pinta de rojo
         public void SetInvulnerable(bool invulnerable)
         {
             isInvulnerable = invulnerable;
 
             if (invulnerable)
             {
-                // Si hay una corutina de color temporal, detenerla (invulnerabilidad tiene prioridad)
                 if (colorCoroutine != null)
                 {
                     StopCoroutine(colorCoroutine);
                     colorCoroutine = null;
                 }
 
-                SetAllRenderersColor(Color.red);
+                SetCarColor(Color.red); // Solo cambia color del auto
             }
             else
             {
@@ -131,8 +156,7 @@ namespace Simulacro
             invulnerabilityCoroutine = null;
         }
 
-        // Nuevo: aplicar un color temporal (ej. azul para balas infinitas)
-        // No aplicará si actualmente hay invulnerabilidad activa (prioridad roja).
+        //Aplicar color solo al auto (no al arma)
         public void ApplyPowerUpColorForDuration(Color color, float duration)
         {
             if (isInvulnerable) return;
@@ -147,18 +171,18 @@ namespace Simulacro
 
         private IEnumerator PowerUpColorCoroutine(Color color, float duration)
         {
-            SetAllRenderersColor(color);
+            SetCarColor(color);
             yield return new WaitForSeconds(duration);
             RestoreOriginalColors();
             colorCoroutine = null;
         }
 
-        private void SetAllRenderersColor(Color color)
+        private void SetCarColor(Color color)
         {
             foreach (var entry in _originals)
             {
                 var rend = entry.renderer;
-                var mats = rend.materials; // obtener instancias para poder asignar
+                var mats = rend.materials;
                 for (int i = 0; i < mats.Length; i++)
                 {
                     if (mats[i].HasProperty("_Color"))
