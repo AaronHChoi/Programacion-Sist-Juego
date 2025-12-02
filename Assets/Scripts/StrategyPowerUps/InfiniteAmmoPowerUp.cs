@@ -2,15 +2,16 @@ using UnityEngine;
 
 public class InfiniteAmmoPowerUp : MonoBehaviour, IPowerUpStrategy
 {
-    public string Name => "InfiniteAmmoPowerUp";
-    [SerializeField] private float duration = 8f;
+    public string Name => "Infinite Ammo";
+    [SerializeField] private float duration = 5f;
+    [SerializeField] private Color powerUpColor = Color.blue; // now blue for infinite ammo
 
     public void PowerUp(Simulacro.PlayerMovement player)
     {
         if (player == null) return;
 
-        // Visual feedback for the duration of the power-up
-        player.ApplyPowerUpColorForDuration(Color.blue, duration);
+        // Ensure player shows blue while infinite ammo is active
+        player.ApplyPowerUpColorForDuration(powerUpColor, duration);
 
         // Activate real infinite ammo behavior via AmmoManager
         if (AmmoManager.Instance != null)
