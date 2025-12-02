@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+
 namespace Simulacro
 {
     public class PlayerMovement : MonoBehaviour
@@ -22,6 +23,8 @@ namespace Simulacro
         [SerializeField] private Transform weaponTransform; // Referencia al arma
         [SerializeField] private Transform carBodyTransform; // Referencia al modelo del auto
         
+        private SoundManager soundManager;
+
         private bool isInvulnerable = false;
         private Coroutine invulnerabilityCoroutine;
         private Coroutine colorCoroutine;
@@ -40,6 +43,11 @@ namespace Simulacro
 
         void Start()
         {
+            // Obtain SoundManager reference (singleton first, fallback to Find)
+            soundManager = SoundManager.Instance ?? FindObjectOfType<SoundManager>();
+            if (soundManager == null)
+                Debug.LogWarning("SoundManager not found in scene. Audio calls will be ignored.");
+
             _currentState = new IdleState();
             OnStateChanged?.Invoke("Idle"); // Notifica estado inicial
 
@@ -98,6 +106,9 @@ namespace Simulacro
             }
 
             health -= damage;
+          
+            // Safe-call the SoundManager
+            soundManager?.PlayPlayerDamaged();
             Debug.Log($"Player hit! Health: {health}");
 
             if (health <= 0)
@@ -109,6 +120,10 @@ namespace Simulacro
         private void Die()
         {
             Debug.Log("Player died!");
+
+            // Play death sound (safe)
+            soundManager?.PlayPlayerDeath();
+
             OnDied?.Invoke();
             gameObject.SetActive(false);
         }

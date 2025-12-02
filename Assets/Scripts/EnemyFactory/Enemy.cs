@@ -12,10 +12,21 @@ public class Enemy : MonoBehaviour, IEnemy
     [SerializeField] private GameObject[] powerUpPrefabs;
 
     private float timeOffset;
+    private SoundManager soundManager;
 
     public void Init()
     {
         timeOffset = Random.value * Mathf.PI * 2f;
+    }
+
+    void Start()
+    {
+        // cache SoundManager (singleton preferred)
+        soundManager = SoundManager.Instance ?? FindObjectOfType<SoundManager>();
+        if (soundManager == null)
+        {
+            Debug.LogWarning("SoundManager not found in scene. Enemy audio calls will be ignored.");
+        }
     }
 
     void Update()
@@ -40,6 +51,9 @@ public class Enemy : MonoBehaviour, IEnemy
 
     public void OnHit()
     {
+        // Play enemy death sound
+        soundManager?.PlayEnemyDeath();
+
         TrySpawnPowerUp();
         GameManager.Instance?.OnEnemyKilled();
         gameObject.SetActive(false);
@@ -56,6 +70,8 @@ public class Enemy : MonoBehaviour, IEnemy
         {
             if (other.TryGetComponent(out PlayerMovement player))
                 player.TakeDamage(damage);
+            // If enemy collides with player directly treat as enemy death
+            soundManager?.PlayEnemyDeath();
             gameObject.SetActive(false);
         }
     }
