@@ -22,7 +22,11 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip _victoryClip;
     [SerializeField] private AudioClip _uiButtonClip;
     [SerializeField] private AudioClip _playerDamagedClip;
+    [SerializeField] private AudioClip _playerShoot;
     [SerializeField] private AudioClip _loseClip;
+    [SerializeField] private AudioClip _reloadClip;
+    [SerializeField] private AudioClip _reloadCompleteClip;
+    [SerializeField] private AudioClip _powerUpPickupClip;
     [SerializeField] private List<AudioClip> _otherSfx = new List<AudioClip>();
 
     [Header("Settings")]
@@ -61,6 +65,23 @@ public class SoundManager : MonoBehaviour
 
         ApplyVolumes();
         BuildSfxMap();
+
+        // Sync persisted settings (from SettingsManager) into this SoundManager so sliders/settings are reflected
+        // This covers cases where SoundManager is created after the SettingsManager or after the UI changed values.
+        try
+        {
+            var settingsInstance = SettingsManager.Instance;
+            if (settingsInstance != null)
+            {
+                // Use the public setters so AudioSources are updated immediately
+                SetMusicVolume(settingsInstance.MusicVolume);
+                SetSfxVolume(settingsInstance.SfxVolume);
+            }
+        }
+        catch (Exception)
+        {
+            // Fail silently; SettingsManager might not exist in some contexts (editor tools, tests, etc.)
+        }
     }
 
     void OnValidate()
@@ -86,6 +107,10 @@ public class SoundManager : MonoBehaviour
         if (_uiButtonClip != null) _sfxMap["UIButton"] = _uiButtonClip;
         if (_playerDamagedClip != null) _sfxMap["PlayerDamaged"] = _playerDamagedClip;
         if (_loseClip != null) _sfxMap["Lose"] = _loseClip;
+        if (_reloadClip != null) _sfxMap["Reload"] = _reloadClip;
+        if (_reloadCompleteClip != null) _sfxMap["ReloadComplete"] = _reloadCompleteClip;
+        if (_playerShoot != null) _sfxMap["PlayerShoot"] = _playerShoot;
+        if (_powerUpPickupClip != null) _sfxMap["PowerUpPickup"] = _powerUpPickupClip;
 
         for (int i = 0; i < _otherSfx.Count; i++)
         {
@@ -102,9 +127,13 @@ public class SoundManager : MonoBehaviour
     public void PlayEnemyDeath() => PlaySfx(_enemyDeathClip);
     public void PlayVictory() => PlaySfx(_victoryClip);
     public void PlayUIButton() => PlaySfx(_uiButtonClip);
-
+    
+    public void PlayPowerUpPickup() => PlaySfx(_powerUpPickupClip); 
+    public void PlayPlayerShoot() => PlaySfx(_playerShoot); 
     public void PlayPlayerDamaged() => PlaySfx(_playerDamagedClip);
     public void PlayLose() => PlaySfx(_loseClip);
+    public void PlayReload() => PlaySfx(_reloadClip);
+    public void PlayReloadComplete() => PlaySfx(_reloadCompleteClip);
 
     public void PlayMusicMainMenu() => PlayMusic(_mainMenuMusic, true);
     public void PlayMusicGameplay() => PlayMusic(_gameplayMusic, true);

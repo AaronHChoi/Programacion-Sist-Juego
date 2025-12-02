@@ -19,6 +19,7 @@ public class AmmoManager : MonoBehaviour
     private Coroutine infiniteAmmoCoroutine; 
     private Coroutine reloadCoroutine;
     private bool isReloading = false;
+    private SoundManager soundManager;
 
     public bool IsReloading => isReloading;
 
@@ -33,6 +34,8 @@ public class AmmoManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         currentAmmo = maxAmmo;
+        // cache SoundManager if available
+        soundManager = SoundManager.Instance ?? FindObjectOfType<SoundManager>();
     }
 
     void OnDestroy()
@@ -74,6 +77,8 @@ public class AmmoManager : MonoBehaviour
         {
             StopCoroutine(reloadCoroutine);
         }
+        // play reload start sound
+        soundManager?.PlayReload();
         reloadCoroutine = StartCoroutine(ReloadCoroutine());
     }
 
@@ -104,6 +109,8 @@ public class AmmoManager : MonoBehaviour
         isReloading = false;
         OnReloadStateChanged?.Invoke(false);
         reloadCoroutine = null;
+        // play reload complete sound
+        soundManager?.PlayReloadComplete();
     }
 
     public void SetInfiniteAmmo(bool active)
@@ -123,6 +130,9 @@ public class AmmoManager : MonoBehaviour
             }
             isReloading = false;
             OnReloadStateChanged?.Invoke(false);
+
+            // signal reload cancelled/completed
+            soundManager?.PlayReloadComplete();
 
             OnAmmoChanged?.Invoke(-1); 
         }

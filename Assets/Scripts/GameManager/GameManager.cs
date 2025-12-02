@@ -74,6 +74,18 @@ public class GameManager : MonoBehaviour
         if (winPanel != null) winPanel.SetActive(false);
         if (exitButton != null) exitButton.SetActive(false);
         if (losePanel != null) losePanel.SetActive(false);
+
+        // Play scene-appropriate music
+        var sceneName = scene.name;
+        if (sceneName.Equals("MainMenu", StringComparison.OrdinalIgnoreCase))
+        {
+            SoundManager.Instance?.PlayMusicMainMenu();
+        }
+        else
+        {
+            // For gameplay levels (Nivel1, Nivel2, etc.) play gameplay music
+            SoundManager.Instance?.PlayMusicGameplay();
+        }
     }
 
     void Start()
@@ -99,6 +111,16 @@ public class GameManager : MonoBehaviour
         }
 
         UpdateLivesUI();
+
+        // Ensure music plays for the current starting scene
+        var active = SceneManager.GetActiveScene();
+        if (active.IsValid())
+        {
+            if (active.name.Equals("MainMenu", StringComparison.OrdinalIgnoreCase))
+                SoundManager.Instance?.PlayMusicMainMenu();
+            else
+                SoundManager.Instance?.PlayMusicGameplay();
+        }
     }
 
     void Update()
@@ -223,6 +245,7 @@ public class GameManager : MonoBehaviour
     private void WinLevel()
     {
         levelCompleted = true;
+        SoundManager.Instance?.PlayVictory();
         Debug.Log("LEVEL COMPLETED!");
 
         EnemySpawner spawner = FindFirstObjectByType<EnemySpawner>();

@@ -45,6 +45,7 @@ public class PowerUpController : MonoBehaviour
                 }
 
                 pickupStrategy.PowerUp(playerMovement);
+                SoundManager.Instance?.PlayPowerUpPickup();
                 Debug.Log($"[Pickup] Applied: {pickupStrategy.Name}");
 
                 // deactivate pickup object

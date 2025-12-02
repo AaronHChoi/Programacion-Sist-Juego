@@ -107,6 +107,7 @@ namespace Simulacro
             if (Input.GetButton("Fire1"))
             {
                 FireIfReady();
+             
             }
         }
 
@@ -181,6 +182,7 @@ namespace Simulacro
             {
                 lastFireTime = Time.time;
                 OnStateChanged?.Invoke("Shooting");
+                SoundManager.Instance?.PlayPlayerShoot();
             }
         }
 
@@ -214,6 +216,7 @@ namespace Simulacro
 
             health -= damage;
             Debug.Log($"Player hit! Health: {health}");
+            SoundManager.Instance?.PlayPlayerDamaged();
 
             if (health <= 0)
             {
