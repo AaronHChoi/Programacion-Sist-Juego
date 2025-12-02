@@ -8,7 +8,8 @@ public class IdleState : PlayerState
         if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
             player.SetState(new MovingState());
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        // Replace spacebar with Fire1 logic: hold/click to start shooting state
+        if (Input.GetButton("Fire1"))
             player.SetState(new ShootingState());
     }
 }

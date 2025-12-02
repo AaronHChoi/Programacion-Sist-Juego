@@ -15,77 +15,184 @@ namespace Simulacro
         [Header("Shooting")]
         public BulletData bulletData;
         public Transform firePoint;
+        [SerializeField] private float fireRate = 5f; // bullets per second
+        private float lastFireTime = -999f;
+        [SerializeField] private LayerMask aimLayerMask = ~0; // layers to aim against (default: everything)
         
         [Header("Health")]
         public int health = 100;
         
         [Header("Visuals")]
         [SerializeField] private Transform weaponTransform; // Referencia al arma
-        [SerializeField] private Transform carBodyTransform; // Referencia al modelo del auto
+        [SerializeField] private Transform carBodyTransform; // Referencia al modelo del auto (puedes asignar manualmente)
+        [Header("PowerUp Visual Meshes")] 
+        [SerializeField] private GameObject redMesh;   // activado cuando invulnerable
+        [SerializeField] private GameObject blueMesh;  // activado cuando ammo infinita
+        [SerializeField] private GameObject purpleMesh;// activado cuando ambos
         
-        private SoundManager soundManager;
-
         private bool isInvulnerable = false;
+        private bool hasInfiniteAmmo = false;
         private Coroutine invulnerabilityCoroutine;
-        private Coroutine colorCoroutine;
 
         private PlayerState _currentState;
 
         public event Action OnDied;
         public event Action<string> OnStateChanged; // Nuevo evento para UI
 
-        private struct RendererOriginalColors
+        void Awake()
         {
-            public Renderer renderer;
-            public Color[] colors;
+            // If carBodyTransform not assigned in Inspector, try to find a sensible default
+            if (carBodyTransform == null)
+            {
+                // Prefer child named like "truck" or similar
+                Transform found = transform.Find("truck.001");
+                if (found == null)
+                {
+                    // fallback: first child that has a Renderer
+                    foreach (Transform child in transform)
+                    {
+                        if (child.GetComponentInChildren<Renderer>() != null)
+                        {
+                            found = child;
+                            break;
+                        }
+                    }
+                }
+
+                if (found != null)
+                {
+                    carBodyTransform = found;
+                }
+            }
         }
-        private List<RendererOriginalColors> _originals = new List<RendererOriginalColors>();
+
+        void OnEnable()
+        {
+            if (AmmoManager.Instance != null)
+            {
+                AmmoManager.Instance.OnInfiniteAmmoStateChanged += HandleInfiniteAmmoChanged;
+            }
+        }
+
+        void OnDisable()
+        {
+            if (AmmoManager.Instance != null)
+            {
+                AmmoManager.Instance.OnInfiniteAmmoStateChanged -= HandleInfiniteAmmoChanged;
+            }
+        }
 
         void Start()
         {
-            // Obtain SoundManager reference (singleton first, fallback to Find)
-            soundManager = SoundManager.Instance ?? FindObjectOfType<SoundManager>();
-            if (soundManager == null)
-                Debug.LogWarning("SoundManager not found in scene. Audio calls will be ignored.");
-
             _currentState = new IdleState();
             OnStateChanged?.Invoke("Idle"); // Notifica estado inicial
 
-            // Guardar colores originales del auto (no del arma)
-            if (carBodyTransform != null)
-            {
-                var renderers = carBodyTransform.GetComponentsInChildren<Renderer>();
-                foreach (var rend in renderers)
-                {
-                    var mats = rend.materials;
-                    var colors = new Color[mats.Length];
-                    for (int i = 0; i < mats.Length; i++)
-                    {
-                        if (mats[i].HasProperty("_Color"))
-                            colors[i] = mats[i].color;
-                        else
-                            colors[i] = Color.white;
-                    }
-                    _originals.Add(new RendererOriginalColors { renderer = rend, colors = colors });
-                }
-            }
+            UpdatePowerUpMeshes();
+        }
 
-            // Asegurar que el arma apunte siempre hacia adelante
-            if (weaponTransform != null)
-            {
-                weaponTransform.localRotation = Quaternion.identity;
-            }
+        // Public helper to allow assigning the car body at runtime (from inspector or other scripts)
+        public void SetCarBodyTransform(Transform t)
+        {
+            carBodyTransform = t;
         }
 
         void Update()
         {
             _currentState.Handle(this);
             
-            // Mantener el arma apuntando hacia adelante (en caso de que se desvíe)
-            if (weaponTransform != null)
+            // Aim firePoint & weapon towards mouse position
+            AimTowardsMouse();
+
+            // Hold fire button to shoot respecting fire rate
+            if (Input.GetButton("Fire1"))
             {
-                weaponTransform.rotation = Quaternion.Euler(0, 0, 0); // Siempre hacia adelante
+                FireIfReady();
             }
+        }
+
+        private void AimTowardsMouse()
+        {
+            if (firePoint == null) return;
+            Camera cam = Camera.main;
+            if (cam == null) return;
+
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            // Option A: Raycast against colliders
+            if (Physics.Raycast(ray, out RaycastHit hit, 1000f, aimLayerMask))
+            {
+                Vector3 target = hit.point;
+                Vector3 dir = (target - firePoint.position);
+                dir.y = 0f; // keep flat on ground plane if needed
+                if (dir.sqrMagnitude > 0.0001f)
+                {
+                    Quaternion rot = Quaternion.LookRotation(dir.normalized, Vector3.up);
+                    firePoint.rotation = rot;
+                    if (weaponTransform != null) weaponTransform.rotation = rot;
+                }
+                return;
+            }
+
+            // Option B: fallback to plane at player height
+            Plane plane = new Plane(Vector3.up, new Vector3(0, transform.position.y, 0));
+            if (plane.Raycast(ray, out float enter))
+            {
+                Vector3 target = ray.GetPoint(enter);
+                Vector3 dir = (target - firePoint.position);
+                dir.y = 0f;
+                if (dir.sqrMagnitude > 0.0001f)
+                {
+                    Quaternion rot = Quaternion.LookRotation(dir.normalized, Vector3.up);
+                    firePoint.rotation = rot;
+                    if (weaponTransform != null) weaponTransform.rotation = rot;
+                }
+            }
+        }
+
+        public void FireIfReady()
+        {
+            float interval = fireRate > 0 ? (1f / fireRate) : 0f;
+            if (Time.time - lastFireTime < interval) return;
+
+            // Try to use ammo or auto-reload
+            bool fired = false;
+            if (AmmoManager.Instance != null)
+            {
+                if (AmmoManager.Instance.IsReloading)
+                {
+                    // skip firing during reload
+                }
+                else if (AmmoManager.Instance.TryUseAmmo())
+                {
+                    fired = SpawnBullet();
+                }
+                else
+                {
+                    // start incremental reload when empty
+                    AmmoManager.Instance.StartReload();
+                }
+            }
+            else
+            {
+                // No ammo manager, still spawn bullet
+                fired = SpawnBullet();
+            }
+
+            if (fired)
+            {
+                lastFireTime = Time.time;
+                OnStateChanged?.Invoke("Shooting");
+            }
+        }
+
+        private bool SpawnBullet()
+        {
+            if (BulletFactory.Instance == null || bulletData == null || firePoint == null) return false;
+            var bullet = BulletFactory.Instance.CreateBullet(
+                bulletData,
+                firePoint.position,
+                firePoint.rotation
+            );
+            return bullet != null;
         }
 
         public void SetState(PlayerState newState)
@@ -106,9 +213,6 @@ namespace Simulacro
             }
 
             health -= damage;
-          
-            // Safe-call the SoundManager
-            soundManager?.PlayPlayerDamaged();
             Debug.Log($"Player hit! Health: {health}");
 
             if (health <= 0)
@@ -120,10 +224,6 @@ namespace Simulacro
         private void Die()
         {
             Debug.Log("Player died!");
-
-            // Play death sound (safe)
-            soundManager?.PlayPlayerDeath();
-
             OnDied?.Invoke();
             gameObject.SetActive(false);
         }
@@ -131,20 +231,32 @@ namespace Simulacro
         public void SetInvulnerable(bool invulnerable)
         {
             isInvulnerable = invulnerable;
+            UpdatePowerUpMeshes();
+        }
 
-            if (invulnerable)
+        private void HandleInfiniteAmmoChanged(bool active)
+        {
+            hasInfiniteAmmo = active;
+            UpdatePowerUpMeshes();
+        }
+
+        private void UpdatePowerUpMeshes()
+        {
+            if (redMesh != null) redMesh.SetActive(false);
+            if (blueMesh != null) blueMesh.SetActive(false);
+            if (purpleMesh != null) purpleMesh.SetActive(false);
+
+            if (isInvulnerable && hasInfiniteAmmo)
             {
-                if (colorCoroutine != null)
-                {
-                    StopCoroutine(colorCoroutine);
-                    colorCoroutine = null;
-                }
-
-                SetCarColor(Color.red); // Solo cambia color del auto
+                if (purpleMesh != null) purpleMesh.SetActive(true);
             }
-            else
+            else if (isInvulnerable)
             {
-                RestoreOriginalColors();
+                if (redMesh != null) redMesh.SetActive(true);
+            }
+            else if (hasInfiniteAmmo)
+            {
+                if (blueMesh != null) blueMesh.SetActive(true);
             }
         }
 
@@ -169,58 +281,6 @@ namespace Simulacro
             Debug.Log("Invulnerability expired - Back to normal");
 
             invulnerabilityCoroutine = null;
-        }
-
-        //Aplicar color solo al auto (no al arma)
-        public void ApplyPowerUpColorForDuration(Color color, float duration)
-        {
-            if (isInvulnerable) return;
-
-            if (colorCoroutine != null)
-            {
-                StopCoroutine(colorCoroutine);
-            }
-
-            colorCoroutine = StartCoroutine(PowerUpColorCoroutine(color, duration));
-        }
-
-        private IEnumerator PowerUpColorCoroutine(Color color, float duration)
-        {
-            SetCarColor(color);
-            yield return new WaitForSeconds(duration);
-            RestoreOriginalColors();
-            colorCoroutine = null;
-        }
-
-        private void SetCarColor(Color color)
-        {
-            foreach (var entry in _originals)
-            {
-                var rend = entry.renderer;
-                var mats = rend.materials;
-                for (int i = 0; i < mats.Length; i++)
-                {
-                    if (mats[i].HasProperty("_Color"))
-                        mats[i].color = color;
-                }
-                rend.materials = mats;
-            }
-        }
-
-        private void RestoreOriginalColors()
-        {
-            foreach (var entry in _originals)
-            {
-                var rend = entry.renderer;
-                var mats = rend.materials;
-                int len = Mathf.Min(mats.Length, entry.colors.Length);
-                for (int i = 0; i < len; i++)
-                {
-                    if (mats[i].HasProperty("_Color"))
-                        mats[i].color = entry.colors[i];
-                }
-                rend.materials = mats;
-            }
         }
     }
 }

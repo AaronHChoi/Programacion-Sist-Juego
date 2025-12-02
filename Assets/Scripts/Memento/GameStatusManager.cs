@@ -76,8 +76,19 @@ namespace Memento
 
         private void HandlePlayerDeath()
         {
-            // Derrota inmediata al llegar a 0 de vida. No usar contador de saves.
-            GameManager.Instance?.LoseLevel();
+            // When player dies, reduce a life. If lives remain, restore last checkpoint; otherwise trigger game over.
+            int remainingLives = GameManager.Instance != null ? GameManager.Instance.DecreaseLife() : -1;
+
+            if (remainingLives > 0)
+            {
+                // Restore the player to the last saved memento (do not consume the save)
+                StartCoroutine(RestoreAfterDeathNextFrame());
+            }
+            else
+            {
+                // No lives left -> end the game
+                GameManager.Instance?.LoseLevel();
+            }
         }
 
         private IEnumerator RestoreAfterDeathNextFrame()
@@ -137,6 +148,10 @@ namespace Memento
         public int GetSaveCount()
         {
             return _savedStates.Count;
+        }
+
+        private void OnTriggerEnter(Collider other) {
+            Debug.Log($"PowerUpController OnTriggerEnter with: {other.name}, tags:{other.tag}");
         }
     }
 }

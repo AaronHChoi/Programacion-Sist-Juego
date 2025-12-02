@@ -18,7 +18,18 @@ public class EnemyFactory : MonoBehaviour
 
     void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        poolMap.Clear();
+
+        if (pools == null) return;
 
         foreach (var pool in pools)
         {
@@ -31,7 +42,8 @@ public class EnemyFactory : MonoBehaviour
                 queue.Enqueue(obj);
             }
 
-            poolMap.Add(pool.enemyName, queue);
+            if (!poolMap.ContainsKey(pool.enemyName))
+                poolMap.Add(pool.enemyName, queue);
         }
     }
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BulletFactory : MonoBehaviour
 {
-    public static BulletFactory Instance;
+    public static BulletFactory Instance { get; private set; }
 
     [System.Serializable]
     public class Pool
@@ -17,12 +17,20 @@ public class BulletFactory : MonoBehaviour
 
     void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     void Start()
     {
         poolDictionary = new Dictionary<string, Queue<GameObject>>();
+
+        if (pools == null) return;
 
         foreach (var pool in pools)
         {
@@ -35,19 +43,22 @@ public class BulletFactory : MonoBehaviour
                 objectPool.Enqueue(obj);
             }
 
-            poolDictionary.Add(pool.bulletData.bulletName, objectPool);
+            if (!poolDictionary.ContainsKey(pool.bulletData.bulletName))
+                poolDictionary.Add(pool.bulletData.bulletName, objectPool);
         }
     }
 
     public GameObject CreateBullet(BulletData data, Vector3 pos, Quaternion rot)
     {
-        var queue = poolDictionary[data.bulletName];
+        if (!poolDictionary.TryGetValue(data.bulletName, out var queue))
+            return null;
+
         GameObject bullet = queue.Dequeue();
 
         if (bullet.activeInHierarchy)
         {
             queue.Enqueue(bullet);
-            return null; // Todas ocupadas
+            return null; // All busy
         }
 
         bullet.transform.SetPositionAndRotation(pos, rot);

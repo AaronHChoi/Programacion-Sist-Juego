@@ -1,4 +1,5 @@
 using UnityEngine;
+using Simulacro;
 
 public class PowerUpController : MonoBehaviour
 {
@@ -12,6 +13,52 @@ public class PowerUpController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log($"PowerUpController OnTriggerEnter with: {other.name}, tags:{other.tag}");
+        // When this script is on the Player, "other" will be the pickup object.
+        if (other == null) return;
+
+        // If other implements IPowerUpStrategy, apply it to this player
+        if (other.TryGetComponent<IPowerUpStrategy>(out var pickupStrategy))
+        {
+            var playerMovement = GetComponent<PlayerMovement>();
+            if (playerMovement == null)
+            {
+                // maybe PowerUpController is on a parent; try to find PlayerMovement in parents
+                playerMovement = GetComponentInParent<PlayerMovement>();
+            }
+
+            if (playerMovement != null)
+            {
+                // Try to auto-assign car body transform if user didn't set it manually
+                // Look for a child named "truck.001" first, then for any Renderer in children
+                Transform carBody = playerMovement.transform.Find("truck.001");
+                if (carBody == null)
+                {
+                    var rend = playerMovement.GetComponentInChildren<Renderer>();
+                    if (rend != null)
+                        carBody = rend.transform;
+                }
+
+                if (carBody != null)
+                {
+                    playerMovement.SetCarBodyTransform(carBody);
+                }
+
+                pickupStrategy.PowerUp(playerMovement);
+                Debug.Log($"[Pickup] Applied: {pickupStrategy.Name}");
+
+                // deactivate pickup object
+                other.gameObject.SetActive(false);
+            }
+            else
+            {
+                Debug.LogWarning("PowerUpController: PlayerMovement not found on GameObject to apply pickup.");
+            }
+
+            return;
+        }
+
+        // If this script is on a pickup (legacy behavior), keep supporting collision with player
         if (other.CompareTag("Player"))
         {
             PowerUpController playerController = other.GetComponent<PowerUpController>();
@@ -29,14 +76,5 @@ public class PowerUpController : MonoBehaviour
             gameObject.SetActive(false);
             return;
         }
-
-        IPowerUpStrategy powerUpStrategy = other.GetComponent<IPowerUpStrategy>();
-        if (powerUpStrategy == null) return;
-
-        SetStrategy(powerUpStrategy);
-        var otherPlayerMovement = other.GetComponent<Simulacro.PlayerMovement>();
-        powerUpStrategy.PowerUp(otherPlayerMovement);
-        Debug.Log($"[Pickup] Equipped: {powerUpStrategy.Name}");
-        other.gameObject.SetActive(false);
     }
 }

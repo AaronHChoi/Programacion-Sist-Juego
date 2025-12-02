@@ -87,7 +87,7 @@ public class AmmoUI : MonoBehaviour
     {
         if (stateText != null)
         {
-            stateText.text = $"STATE: {stateName.ToUpper()}";
+            stateText.text = $"{stateName.ToUpper()}";
         }
 
         if (stateIndicator != null)
@@ -100,7 +100,5 @@ public class AmmoUI : MonoBehaviour
                 _ => Color.white
             };
         }
-
-        Debug.Log($"UI State Updated: {stateName}");
     }
 }

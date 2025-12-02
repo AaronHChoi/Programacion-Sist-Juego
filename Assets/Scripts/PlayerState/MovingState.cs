@@ -22,7 +22,8 @@ public class MovingState : PlayerState
         if (h == 0 && v == 0) 
             player.SetState(new IdleState());
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        // Replace spacebar with Fire1 logic: switch to shooting when firing
+        if (Input.GetButton("Fire1"))
             player.SetState(new ShootingState());
     }
 }

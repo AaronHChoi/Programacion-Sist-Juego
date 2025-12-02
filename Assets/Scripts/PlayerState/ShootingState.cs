@@ -5,15 +5,27 @@ public class ShootingState : PlayerState
 {
     public override void Handle(PlayerMovement player)
     {
-        if (AmmoManager.Instance.TryUseAmmo())
+        // If currently reloading, go to ReloadingState
+        if (AmmoManager.Instance != null && AmmoManager.Instance.IsReloading)
         {
-            BulletFactory.Instance.CreateBullet(
-                player.bulletData,
-                player.firePoint.position,
-                player.firePoint.rotation
-            );
+            player.SetState(new ReloadingState());
+            return;
         }
 
-        player.SetState(new IdleState());
+        // Use PlayerMovement's fire cadence & ammo logic
+        player.FireIfReady();
+
+        // If Fire1 released, back to Idle
+        if (!Input.GetButton("Fire1"))
+        {
+            player.SetState(new IdleState());
+            return;
+        }
+
+        // If reload started due to empty ammo, transition to Reloading
+        if (AmmoManager.Instance != null && AmmoManager.Instance.IsReloading)
+        {
+            player.SetState(new ReloadingState());
+        }
     }
 }

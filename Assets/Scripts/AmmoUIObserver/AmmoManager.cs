@@ -4,25 +4,47 @@ using System.Collections;
 
 public class AmmoManager : MonoBehaviour
 {
-    public static AmmoManager Instance;
+    public static AmmoManager Instance { get; private set; }
     public event Action<int> OnAmmoChanged;
+    public event Action<bool> OnInfiniteAmmoStateChanged; // notify visuals
+    public event Action<bool> OnReloadStateChanged; // true when reloading
 
+    [Header("Ammo Settings")]
     [SerializeField] private int maxAmmo = 10;
+    [SerializeField] private float reloadDelayPerBullet = 0.25f; // time to add each bullet
+    [SerializeField] private float reloadStartDelay = 0.0f; // optional delay before starting reload
+
     private int currentAmmo;
     private bool infiniteAmmo = false; 
     private Coroutine infiniteAmmoCoroutine; 
+    private Coroutine reloadCoroutine;
+    private bool isReloading = false;
+
+    public bool IsReloading => isReloading;
 
     void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
+        DontDestroyOnLoad(gameObject);
+
         currentAmmo = maxAmmo;
+    }
+
+    void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
-            Reload();
+            StartReload();
         }
     }
 
@@ -34,6 +56,7 @@ public class AmmoManager : MonoBehaviour
             return true;
         }
 
+        if (isReloading) return false; // cannot shoot while reloading
         if (currentAmmo <= 0) return false;
 
         currentAmmo--;
@@ -41,25 +64,71 @@ public class AmmoManager : MonoBehaviour
         return true;
     }
 
-    public void Reload()
+    public void StartReload()
     {
         if (infiniteAmmo) return; 
+        if (isReloading) return;
+        if (currentAmmo >= maxAmmo) return;
 
-        currentAmmo = maxAmmo;
-        OnAmmoChanged?.Invoke(currentAmmo);
+        if (reloadCoroutine != null)
+        {
+            StopCoroutine(reloadCoroutine);
+        }
+        reloadCoroutine = StartCoroutine(ReloadCoroutine());
+    }
+
+    // Backward compatibility
+    public void Reload()
+    {
+        StartReload();
+    }
+
+    private IEnumerator ReloadCoroutine()
+    {
+        isReloading = true;
+        OnReloadStateChanged?.Invoke(true);
+
+        if (reloadStartDelay > 0f)
+        {
+            yield return new WaitForSeconds(reloadStartDelay);
+        }
+
+        // Fill one by one
+        while (currentAmmo < maxAmmo && !infiniteAmmo)
+        {
+            yield return new WaitForSeconds(reloadDelayPerBullet);
+            currentAmmo = Mathf.Min(maxAmmo, currentAmmo + 1);
+            OnAmmoChanged?.Invoke(currentAmmo);
+        }
+
+        isReloading = false;
+        OnReloadStateChanged?.Invoke(false);
+        reloadCoroutine = null;
     }
 
     public void SetInfiniteAmmo(bool active)
     {
         infiniteAmmo = active;
 
+        // notify UI and visuals
+        OnInfiniteAmmoStateChanged?.Invoke(active);
+
         if (active)
         {
+            // cancel any reload
+            if (reloadCoroutine != null)
+            {
+                StopCoroutine(reloadCoroutine);
+                reloadCoroutine = null;
+            }
+            isReloading = false;
+            OnReloadStateChanged?.Invoke(false);
+
             OnAmmoChanged?.Invoke(-1); 
         }
         else
         {
-            currentAmmo = maxAmmo; 
+            // when infinite ends, keep currentAmmo as is
             OnAmmoChanged?.Invoke(currentAmmo);
         }
     }

@@ -1,38 +1,45 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-    public interface IGameEvent
+public interface IGameEvent
+{
+    void Execute();
+}
+
+public class EventQueue : MonoBehaviour
+{
+    public static EventQueue Instance { get; private set; }
+
+    private readonly Queue<IGameEvent> _queue = new();
+
+    void Awake()
     {
-        void Execute();
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
-    public class EventQueue : MonoBehaviour
+    void OnDestroy()
     {
-        public static EventQueue Instance { get; private set; }
+        if (Instance == this) Instance = null;
+    }
 
-        private readonly Queue<IGameEvent> _queue = new();
+    public void EnqueueEvent(IGameEvent gameEvent)
+    {
+        _queue.Enqueue(gameEvent);
+    }
 
-        void Awake()
+    void Update()
+    {
+        while (_queue.Count > 0)
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
-        }
-
-        public void EnqueueEvent(IGameEvent gameEvent)
-        {
-            _queue.Enqueue(gameEvent);
-        }
-
-        void Update()
-        {
-            while (_queue.Count > 0)
-            {
-                _queue.Dequeue().Execute();
-            }
+            _queue.Dequeue().Execute();
         }
     }
+}
 
