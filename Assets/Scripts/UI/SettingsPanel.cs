@@ -8,14 +8,12 @@ public class SettingsPanel : MonoBehaviour
     public Slider musicSlider;
     public Slider sfxSlider;
 
-    [Header("Display")]
-    public Toggle fullscreenToggle;
-    public Dropdown resolutionDropdown;
+ 
 
     [Header("Controls")]
     public Button closeButton;
 
-    private Resolution[] resolutions;
+    // resolution functionality removed per request
 
     void OnEnable()
     {
@@ -25,29 +23,15 @@ public class SettingsPanel : MonoBehaviour
             return;
         }
 
-        // Init resolutions
-        resolutions = Screen.resolutions;
-        resolutionDropdown?.ClearOptions();
-        var options = new System.Collections.Generic.List<string>();
-        for (int i = 0; i < resolutions.Length; i++)
-        {
-            var r = resolutions[i];
-            options.Add($"{r.width} x {r.height} @ {r.refreshRate}Hz");
-        }
-        if (options.Count == 0) options.Add($"{Screen.width} x {Screen.height}");
-        resolutionDropdown?.AddOptions(options);
-
         // Populate UI with current settings
         musicSlider?.SetValueWithoutNotify(SettingsManager.Instance.MusicVolume);
         sfxSlider?.SetValueWithoutNotify(SettingsManager.Instance.SfxVolume);
-        fullscreenToggle?.SetIsOnWithoutNotify(SettingsManager.Instance.Fullscreen);
-        resolutionDropdown?.SetValueWithoutNotify(SettingsManager.Instance.ResolutionIndex);
+        
 
         // Listeners
         if (musicSlider != null) musicSlider.onValueChanged.AddListener(OnMusicChanged);
         if (sfxSlider != null) sfxSlider.onValueChanged.AddListener(OnSfxChanged);
-        if (fullscreenToggle != null) fullscreenToggle.onValueChanged.AddListener(OnFullscreenChanged);
-        if (resolutionDropdown != null) resolutionDropdown.onValueChanged.AddListener(OnResolutionChanged);
+        
         if (closeButton != null) closeButton.onClick.AddListener(ClosePanel);
     }
 
@@ -56,8 +40,7 @@ public class SettingsPanel : MonoBehaviour
         // Remove listeners to avoid duplicate subscriptions when toggling the panel
         if (musicSlider != null) musicSlider.onValueChanged.RemoveListener(OnMusicChanged);
         if (sfxSlider != null) sfxSlider.onValueChanged.RemoveListener(OnSfxChanged);
-        if (fullscreenToggle != null) fullscreenToggle.onValueChanged.RemoveListener(OnFullscreenChanged);
-        if (resolutionDropdown != null) resolutionDropdown.onValueChanged.RemoveListener(OnResolutionChanged);
+        
         if (closeButton != null) closeButton.onClick.RemoveListener(ClosePanel);
     }
 
@@ -83,7 +66,7 @@ public class SettingsPanel : MonoBehaviour
 
     public void OnResolutionChanged(int index)
     {
-        SettingsManager.Instance.SetResolution(index);
+        // resolution support removed
     }
 
     public void ClosePanel()
@@ -96,8 +79,7 @@ public class SettingsPanel : MonoBehaviour
         // refresh values in case changed elsewhere
         musicSlider?.SetValueWithoutNotify(SettingsManager.Instance.MusicVolume);
         sfxSlider?.SetValueWithoutNotify(SettingsManager.Instance.SfxVolume);
-        fullscreenToggle?.SetIsOnWithoutNotify(SettingsManager.Instance.Fullscreen);
-        resolutionDropdown?.SetValueWithoutNotify(SettingsManager.Instance.ResolutionIndex);
+        
         gameObject.SetActive(true);
     }
 }
