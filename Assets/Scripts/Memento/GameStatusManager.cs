@@ -76,8 +76,8 @@ namespace Memento
 
         private void HandlePlayerDeath()
         {
-            // Restore on next frame so PlayerMovement.Die() can deactivate safely first
-            StartCoroutine(RestoreAfterDeathNextFrame());
+            // Derrota inmediata al llegar a 0 de vida. No usar contador de saves.
+            GameManager.Instance?.LoseLevel();
         }
 
         private IEnumerator RestoreAfterDeathNextFrame()

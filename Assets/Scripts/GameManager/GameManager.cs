@@ -14,6 +14,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI killCountText;
     [SerializeField] private GameObject winPanel;
     [SerializeField] private GameObject exitButton; 
+    [SerializeField] private GameObject losePanel; // panel derrota
+    [SerializeField] private TextMeshProUGUI livesText; // muestra vidas del jugador
+    [SerializeField] private int playerLives = 3; // vidas iniciales
 
     private int enemiesKilled = 0;
     private bool levelCompleted = false;
@@ -43,6 +46,13 @@ public class GameManager : MonoBehaviour
         {
             exitButton.SetActive(false);
         }
+
+        if (losePanel != null)
+        {
+            losePanel.SetActive(false);
+        }
+
+        UpdateLivesUI();
     }
 
     public void OnEnemyKilled()
@@ -99,6 +109,50 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void LoseLevel()
+    {
+        if (levelCompleted) return;
+        levelCompleted = true;
+        Debug.Log("LEVEL FAILED!");
+
+        EnemySpawner spawner = FindFirstObjectByType<EnemySpawner>();
+        if (spawner != null)
+        {
+            spawner.StopSpawning();
+        }
+
+        if (losePanel != null)
+        {
+            losePanel.SetActive(true);
+        }
+    }
+
+    private void UpdateLivesUI()
+    {
+        if (livesText != null)
+        {
+            livesText.text = $"Lives: {playerLives}";
+        }
+    }
+
+    public int DecreaseLife()
+    {
+        if (levelCompleted) return playerLives;
+
+        playerLives = Mathf.Max(0, playerLives - 1);
+        Debug.Log($"Player died. Remaining lives: {playerLives}");
+        UpdateLivesUI();
+
+        if (playerLives <= 0)
+        {
+            LoseLevel();
+        }
+
+        return playerLives;
+    }
+
+    public int GetPlayerLives() => playerLives;
+
     private void ShowExitButton()
     {
         if (exitButton != null)
@@ -112,6 +166,19 @@ public class GameManager : MonoBehaviour
     private void LoadNextLevel()
     {
         SceneManager.LoadScene(nextLevelName);
+    }
+
+    public void RestartLevel()
+    {
+        // Opcional: Time.timeScale = 1f;
+        Scene current = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(current.name);
+    }
+
+    public void LoadMainMenu()
+    {
+        // Opcional: Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void ExitGame()
